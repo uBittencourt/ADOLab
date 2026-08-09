@@ -39,15 +39,17 @@ public class AlunoRepository : IRepository<Aluno>
             DataNascimento DATE NOT NULL
         )";
 
-        using var conn = new OracleConnection(ConnectionString);
-        conn.Open();
-        using var checkCmd = new OracleCommand(verificaTabela, conn);
-        var existe = Convert.ToInt32(checkCmd.ExecuteScalar()) > 0;
-
-        if (!existe)
+        using (OracleConnection conn = new OracleConnection(ConnectionString))
         {
-            using var createCmd = new OracleCommand(ddl, conn);
-            createCmd.ExecuteNonQuery();
+            conn.Open();
+            using OracleCommand checkCmd = new OracleCommand(verificaTabela, conn);
+            bool existe = Convert.ToInt32(checkCmd.ExecuteScalar()) > 0;
+
+            if (!existe)
+            {
+                using OracleCommand createCmd = new OracleCommand(ddl, conn);
+                createCmd.ExecuteNonQuery();
+            }
         }
     }
 
@@ -66,7 +68,7 @@ public class AlunoRepository : IRepository<Aluno>
             VALUES (:nome, :idade, :email, TO_DATE(:dataNascimento, 'yyyy-MM-dd'))
             RETURNING Id INTO :id";
 
-        using (var conn = new OracleConnection(ConnectionString))
+        using (OracleConnection conn = new OracleConnection(ConnectionString))
         {
             OracleCommand cmd = new OracleCommand(sql, conn);
             cmd.Parameters.Add(new OracleParameter("nome", nome));
@@ -90,7 +92,24 @@ public class AlunoRepository : IRepository<Aluno>
     /// <returns>Uma lista de entidades Aluno.</returns>
     public List<Aluno> Listar()
     {
-        throw new NotImplementedException();
+        using (OracleConnection conn = new OracleConnection(ConnectionString))
+        {
+            conn.Open();
+            OracleCommand cmd = new OracleCommand("SELECT Id, Nome, Idade, Email, DataNascimento FROM Alunos ORDER BY Id", conn);
+            OracleDataReader reader = cmd.ExecuteReader();
+            List<Aluno> alunos = new List<Aluno>();
+            while (reader.Read())
+            {
+                Aluno aluno = new Aluno(
+                    reader.GetInt32(0), 
+                    reader.GetString(1), 
+                    reader.GetInt32(2), 
+                    reader.GetString(3), 
+                    reader.GetDateTime(4));
+                alunos.Add(aluno);
+            }
+            return alunos;
+        }
     }
 
     /// <summary>
