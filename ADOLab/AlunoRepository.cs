@@ -92,10 +92,14 @@ public class AlunoRepository : IRepository<Aluno>
     /// <returns>Uma lista de entidades Aluno.</returns>
     public List<Aluno> Listar()
     {
+        string sql = @"
+            SELECT Id, Nome, Idade, Email, DataNascimento 
+            FROM Alunos 
+            ORDER BY Id";
         using (OracleConnection conn = new OracleConnection(ConnectionString))
         {
             conn.Open();
-            OracleCommand cmd = new OracleCommand("SELECT Id, Nome, Idade, Email, DataNascimento FROM Alunos ORDER BY Id", conn);
+            OracleCommand cmd = new OracleCommand(sql, conn);
             OracleDataReader reader = cmd.ExecuteReader();
             List<Aluno> alunos = new List<Aluno>();
             while (reader.Read())
@@ -123,7 +127,25 @@ public class AlunoRepository : IRepository<Aluno>
     /// <returns>O n�mero de linhas afetadas.</returns>
     public int Atualizar(int id, string nome, int idade, string email, DateTime dataNascimento)
     {
-        throw new NotImplementedException();
+        string sql = @"
+            UPDATE Alunos
+            SET Nome = :nome,
+                Idade = :idade,
+                Email = :email,
+                DataNascimento = TO_DATE(:dataNascimento, 'yyyy-MM-dd')
+            WHERE Id = :id";
+        using (OracleConnection conn = new OracleConnection(ConnectionString))
+        {
+            OracleCommand cmd = new OracleCommand(sql, conn);
+            cmd.Parameters.Add(new OracleParameter("nome", nome));
+            cmd.Parameters.Add(new OracleParameter("idade", idade));
+            cmd.Parameters.Add(new OracleParameter("email", email));
+            cmd.Parameters.Add(new OracleParameter("dataNascimento", dataNascimento.ToString("yyyy-MM-dd")));
+            cmd.Parameters.Add(new OracleParameter("id", id));
+            conn.Open();
+
+            return cmd.ExecuteNonQuery();
+        }
     }
 
     /// <summary>
