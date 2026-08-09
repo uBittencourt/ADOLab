@@ -2,6 +2,12 @@
 
 Projeto de estudo de acesso a dados com ADO.NET, composto por uma biblioteca de domínio, uma aplicação console e uma aplicação web MVC.
 
+## 🧑‍🎓 Integrante - 3ESPG
+
+| Nome | RM |
+| :--- | :--- |
+| Vinicius Fernandes Tavares Bittencourt | RM558909 |
+
 ## Desafio
 
 - Implementar os métodos CRUD da classe `AlunoRepository`.
