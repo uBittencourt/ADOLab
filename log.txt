@@ -1,0 +1,5 @@
+﻿[2026-08-08 21:27:44] [INFO] Iniciando aplicação e garantindo o esquema.
+[2026-08-08 21:27:59] [ERROR] Erro SQL 2: Erro de rede ou específico à instância ao estabelecer conexão com o SQL Server. O servidor não foi encontrado ou não estava acessível. Verifique se o nome da instância está correto e se o SQL Server está configurado para permitir conexões remotas. (provider: Provedor de Pipes Nomeados, error: 40 - Não foi possível abrir uma conexão com o SQL Server)
+[2026-08-08 21:41:06] [INFO] Iniciando aplicação e garantindo o esquema.
+[2026-08-08 21:41:06] [ERROR] Exceção não tratada: ORA-00922: opção não encontrada ou inválida
+https://docs.oracle.com/error-help/db/ora-00922/

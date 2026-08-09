@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using Microsoft.Data.SqlClient;
+using Oracle.ManagedDataAccess.Client;
 
 namespace ADOLab;
 
@@ -14,8 +14,8 @@ class Program
             .AddEnvironmentVariables()
             .Build();
 
-        string connString = config.GetConnectionString("SqlServerConnection")
-            ?? throw new InvalidOperationException("ConnectionStrings:SqlServerConnection não encontrada.");
+        string connString = config.GetConnectionString("OracleConnection")
+            ?? throw new InvalidOperationException("ConnectionStrings:OracleConnection não encontrada.");
         #endregion
 
         var logger = new FileLogger("log.txt");
@@ -127,10 +127,10 @@ class Program
                 }
             }
         }
-        catch (SqlException ex)
+        catch (OracleException ex)
         {
-            Console.WriteLine($"[ERRO SQL] {ex.Number} - {ex.Message}");
-            await logger.LogErrorAsync($"Erro SQL {ex.Number}: {ex.Message}");
+            Console.WriteLine($"[ERRO ORACLE] {ex.Number} - {ex.Message}");
+            await logger.LogErrorAsync($"Erro Oracle {ex.Number}: {ex.Message}");
         }
         catch (Exception ex)
         {
