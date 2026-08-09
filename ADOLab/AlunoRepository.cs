@@ -173,6 +173,33 @@ public class AlunoRepository : IRepository<Aluno>
     /// <returns>Uma lista de entidades Aluno correspondentes.</returns>
     public List<Aluno> Buscar(string propriedade, object valor)
     {
-        throw new NotImplementedException();
+        string sql = $@"
+            SELECT Id, Nome, Idade, Email, DataNascimento
+            FROM Alunos
+            WHERE {propriedade} = :valor";
+
+        if (propriedade == "DataNascimento")
+            valor = DateTime.Parse(valor.ToString());
+        
+        using (OracleConnection conn = new OracleConnection(ConnectionString))
+        {
+            OracleCommand cmd = new OracleCommand(sql, conn);
+            cmd.Parameters.Add(new OracleParameter("valor", valor));
+            conn.Open();
+            OracleDataReader reader = cmd.ExecuteReader();
+            List<Aluno> alunos = new List<Aluno>();
+            while (reader.Read())
+            {
+                Aluno aluno = new Aluno(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetInt32(2),
+                    reader.GetString(3),
+                    reader.GetDateTime(4));
+                alunos.Add(aluno);
+            }
+            return alunos;
+        }
+
     }
 }
