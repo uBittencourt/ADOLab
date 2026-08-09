@@ -61,7 +61,27 @@ public class AlunoRepository : IRepository<Aluno>
     /// <returns>O ID do Aluno rec�m-inserido.</returns>
     public int Inserir(string nome, int idade, string email, DateTime dataNascimento)
     {
-        throw new NotImplementedException();
+        string sql = @"
+            INSERT INTO Alunos (Nome, Idade, Email, DataNascimento)
+            VALUES (:nome, :idade, :email, TO_DATE(:dataNascimento, 'yyyy-MM-dd'))
+            RETURNING Id INTO :id";
+
+        using (var conn = new OracleConnection(ConnectionString))
+        {
+            OracleCommand cmd = new OracleCommand(sql, conn);
+            cmd.Parameters.Add(new OracleParameter("nome", nome));
+            cmd.Parameters.Add(new OracleParameter("idade", idade));
+            cmd.Parameters.Add(new OracleParameter("email", email));
+            cmd.Parameters.Add(new OracleParameter("dataNascimento", dataNascimento.ToString("yyyy-MM-dd")));
+
+            OracleParameter idParam = new OracleParameter("Id", OracleDbType.Int32);
+            idParam.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(idParam);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            
+            return Convert.ToInt32(idParam.Value.ToString());
+        }
     }
 
     /// <summary>
