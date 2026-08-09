@@ -155,7 +155,14 @@ public class AlunoRepository : IRepository<Aluno>
     /// <returns>O n�mero de linhas afetadas.</returns>
     public int Excluir(int id)
     {
-        throw new NotImplementedException();
+        string sql = "DELETE FROM Alunos WHERE Id = :id";
+        using (OracleConnection conn = new OracleConnection(ConnectionString))
+        {
+            OracleCommand cmd = new OracleCommand(sql, conn);
+            cmd.Parameters.Add(new OracleParameter("id", id));
+            conn.Open();
+            return cmd.ExecuteNonQuery();
+        }
     }
 
     /// <summary>
